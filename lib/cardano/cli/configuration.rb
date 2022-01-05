@@ -21,6 +21,10 @@ module Cardano
       def configure
         yield(configuration)
       end
+
+      def new(config = configuration)
+        Client.new(config)
+      end
     end
   end
 end

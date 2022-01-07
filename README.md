@@ -90,6 +90,12 @@ Retrieves the node’s current UTxO, filtered by address
 client.query.utxo("addr1qy...cx")
 ```
 
+Retrieves the node’s current pool parameters
+
+```ruby
+client.query.protocol_params
+```
+
 ### 1.2 Wallets / Addresses
 
 The current implementation supports a rudimentary concept of wallets and addresses. A set of public and private keys is what we call a wallet here.

@@ -12,6 +12,10 @@ module Cardano
           @client.run("query tip #{@client.network_argument}")
         end
 
+        def protocol_params
+          @protocol_params ||= @client.run("query protocol-parameters #{@client.network_argument}")
+        end
+
         def utxo(addr)
           response = @client.run("query utxo --address #{addr} #{@client.network_argument}")
 

@@ -2,7 +2,7 @@
 
 A Ruby wrapper for the Cardano Node command line interface (CLI).
 
-It aims to support all [CLI commands](https://github.com/input-output-hk/cardano-node/blob/master/doc/reference/cardano-node-cli-reference.md). The intuitive API allows to easily call the CLI commands in a rubyish way.
+It aims to support most [CLI commands](https://github.com/input-output-hk/cardano-node/blob/master/doc/reference/cardano-node-cli-reference.md). The intuitive API allows to easily call the CLI commands in a rubyish way.
 
 Caution: This gem is under development! The API can change any time until version 1.0 is reached.
 
@@ -50,19 +50,21 @@ The configuration options can be set by using the `configure` block
 Cardano::CLI.configure do |config|
   config.network = ENV.fetch('NETWORK')
   config.cli_path = ENV.fetch('CLI_PATH')
+  config.keys_path = ENV.fetch('KEYS_PATH')
   config.logger = MyLogger.new
 end
 ```
 
-In a minimal configuration, you must configure the `cli_path` because it is the essential receiver for all the commands you want to execute.
+A minimal configuration only requires the `cli_path` because it is the essential receiver for all the commands you want to execute. If you want to use wallets / addresses you'll also need to provide the `keys_path` for storing the keys.
 
-The following is the list of available configuration options with their default values
+The following list shows available configuration options with their default values
 
-```ruby
-network   # The Cardano blockchain network to connect to. Default :testnet
-cli_path  # The path to the cardano-cli binary. Default nil
-logger    # A Logger instance. Default: Logger.new($stdout)
-```
+| config      | description                                             | default value         |
+| ----------- | ------------------------------------------------------- | --------------------- |
+| `network`   | The Cardano blockchain network to connect storing       | `:testnet`            |
+| `cli_path`  | The path to the cardano-cli binary                      | `nil`                 |
+| `keys_path` | The path to a folder for storing key and address files  | `nil`                 |
+| `logger`    | A Logger instance                                       | `Logger.new($stdout)` |
 
 ## 1 Usage
 
@@ -86,6 +88,54 @@ Retrieves the node’s current UTxO, filtered by address
 
 ```ruby
 client.query.utxo("addr1qy...cx")
+```
+
+### 1.2 Wallets / Addresses
+
+The current implementation supports a rudimentary concept of wallets and addresses. A set of public and private keys is what we call a wallet here.
+
+It is on the roadmap to support a more sophisticated way of managing wallets, probably by pulling in `cardano-wallet` as another dependency.
+
+#### Create keys
+Create a new payment key-pair (aka wallet) and a first payment address
+
+```ruby
+wallet = client.wallets.create("my-wallet")
+```
+
+Alternatively, if you only want to create the wallet keys but no payment address, you can pass the following keyword argument: `without_payment_address: true`
+
+```ruby
+# returns Wallet
+wallet = client.wallets.create("my-wallet", without_payment_address: true)
+```
+
+List all payment addresses objects belonging to a wallet
+
+```ruby
+# returns [Address]
+addresses = wallet.payment_addresses
+```
+
+Create a new payment addresses for a wallet
+
+```ruby
+# returns Address
+address = wallet.create_payment_address
+```
+
+Retrieve more information about an address
+
+```ruby
+# returns Hash
+address.info
+```
+
+Retrieve the hash for an address key
+
+```ruby
+# returns String
+address.key_to_hash
 ```
 
 ## Development

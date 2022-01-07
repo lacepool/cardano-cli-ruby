@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
+require_relative "response"
 require_relative "commands/query"
+require_relative "commands/wallets"
+require_relative "commands/wallet"
 
 module Cardano
   module CLI
     class Client
-      attr_reader :configuration
+      attr_reader :configuration, :last_response
 
       def initialize(config)
         @configuration = config
@@ -16,17 +19,21 @@ module Cardano
       end
 
       def run(cmd)
-        stdout, stderr, status = Open3.capture3("#{@cli_path} #{cmd}")
-
-        if status.success?
-          stdout
-        else
-          { error: stderr, status: status }.to_json
-        end
+        @last_response = Cardano::CLI::Response.new(
+          Open3.capture3("#{@cli_path} #{cmd}")
+        )
       end
 
       def query
         Cardano::CLI::Commands::Query.new(self)
+      end
+
+      def wallet(name)
+        Cardano::CLI::Commands::Wallet.new(self, name)
+      end
+
+      def wallets
+        Cardano::CLI::Commands::Wallets.new(self)
       end
 
       def network_argument

@@ -13,9 +13,9 @@ module Cardano
         end
 
         def utxo(addr)
-          res = @client.run("query utxo --address #{addr} #{@client.network_argument}")
+          response = @client.run("query utxo --address #{addr} #{@client.network_argument}")
 
-          utxos = res.split(/\n/).drop(2)
+          utxos = response.data.split(/\n/).drop(2)
           utxos.map do |utxo|
             split_utxo = utxo.split
 

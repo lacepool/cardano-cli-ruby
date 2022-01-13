@@ -5,7 +5,7 @@ module Cardano
     module Commands
       class Wallets
         def self.dir
-          @dir ||= File.expand_path(Cardano::CLI.configuration.keys_path)
+          @dir ||= File.expand_path(Cardano::CLI.configuration.wallets_path)
         end
 
         def initialize(client)

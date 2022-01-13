@@ -13,8 +13,8 @@ module Cardano
         {
           network: :testnet,
           cli_path: nil,
+          wallets_path: nil,
           logger: Logger.new($stdout),
-          keys_path: nil,
         }
       end
 

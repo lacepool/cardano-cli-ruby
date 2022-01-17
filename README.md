@@ -4,6 +4,8 @@ A Ruby wrapper for the Cardano Node command line interface (CLI).
 
 It aims to support most [CLI commands](https://github.com/input-output-hk/cardano-node/blob/master/doc/reference/cardano-node-cli-reference.md). The intuitive API allows to easily call the CLI commands in a rubyish way.
 
+Even though you can always just use the provided methods for triggering the commands on the cardano-cli,  this library also adds some convienence layer on top of it possibly making your life easier.
+
 Caution: This gem is under development! The API can change any time until version 1.0 is reached.
 
 ## Installation
@@ -36,7 +38,9 @@ docker run -d \
   --name=relay \
   -e NODE_NAME="relay" \
   -e CARDANO_NETWORK="testnet" \
-  -v $PWD/config:/config \
+  -e CARDANO_NODE_SOCKET_PATH="/node-ipc/node.socket" \
+  -v /node-ipc:/node-ipc \
+  -v /config:/config \
   arradev/cardano-pool:latest --start
 ```
 
@@ -116,6 +120,8 @@ Alternatively, if you only want to create the wallet keys but no payment address
 wallet = client.wallets.create("my-wallet", without_payment_address: true)
 ```
 
+### Payment addresses
+
 List all payment addresses objects belonging to a wallet
 
 ```ruby
@@ -142,6 +148,39 @@ Retrieve the hash for an address key
 ```ruby
 # returns String
 address.key_to_hash
+```
+
+### Transactions
+
+You can either build a transaction manually as if you were using the cardano-cli, or you can make use of the provided methods sparing you some manual steps.
+
+Creating transactions requires thinking about coin selection. This library implements the Random-Improve algorithm researched by [Edsko de Vries](https://twitter.com/EdskoDeVries) and specified as [CIP#2](https://cips.cardano.org/cips/cip2/) by the cardano-wallet team.
+
+Caution: Currently, the coin selection process is not thread safe and you should build and submit transactions sequentially.
+
+Examples
+
+```ruby
+# Transaction with only 1 output
+tx = wallet.transactions.create(to: "addr1...", lovelace: 5_000_000)
+
+# Transaction with multiple outputs
+outputs = [
+    { to: "addr1abc..", lovelace: 50_000_000 },
+    { to: "addr1def..", lovelace: 10_000_000 },
+    { to: "addr1ghi..", lovelace: 20_000_000 },
+]
+tx = wallet.transactions.create(outputs)
+
+# Building the transaction manually, with only 1 output
+tx = Cardano::CLI::Commands::Transaction.new(wallet: wallet, to: "addr1..", lovelace: 5_000_000, ttl: 1200)
+draft_file_path = tx.draft
+fees = tx.calculate_fees
+change = tx.calculate_change
+raw_file_path = tx.build
+signed_file_path = tx.sign
+
+tx.submit
 ```
 
 ## Development

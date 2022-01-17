@@ -46,6 +46,10 @@ module Cardano
           @address ||= File.read @file
         end
 
+        def utxos(ada_only: false)
+          @client.query.utxos(address, ada_only: ada_only)
+        end
+
         alias_method :to_s, :address
 
         # def vkey

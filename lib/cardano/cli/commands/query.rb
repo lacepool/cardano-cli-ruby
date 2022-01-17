@@ -9,26 +9,43 @@ module Cardano
         end
 
         def tip
-          @client.run("query tip #{@client.network_argument}")
+          response = @client.run("query tip #{@client.network_argument}")
+
+          return unless response.success?
+
+          JSON.parse(response.data)
         end
 
         def protocol_params
           @protocol_params ||= @client.run("query protocol-parameters #{@client.network_argument}")
         end
 
-        def utxo(addr)
-          response = @client.run("query utxo --address #{addr} #{@client.network_argument}")
+        def utxos(address, ada_only: false)
+          case address
+          when String
+            addr_str = "--address #{address}"
+          when Array
+            addr_str = address.map { |addr| "--address #{addr}" }.join(" ")
+          end
+
+          response = @client.run("query utxo #{addr_str} #{@client.network_argument}")
 
           utxos = response.data.split(/\n/).drop(2)
-          utxos.map do |utxo|
+          utxos = utxos.map do |utxo|
             split_utxo = utxo.split
 
-            {}.tap do |h|
-              h[:txhash] = split_utxo[0]
-              h[:txix] = split_utxo[1].to_i
-              h[:lovelace] = split_utxo[2].to_i
-              h[:assets] = assets_from_utxo(utxo)
-            end
+            Cardano::Utxo.new(
+              txhash: split_utxo[0],
+              txix: split_utxo[1].to_i,
+              lovelace: split_utxo[2].to_i,
+              assets: assets_from_utxo(utxo)
+            )
+          end
+
+          if ada_only
+            utxos.delete_if { |utxo| utxo.assets.any? }
+          else
+            utxos
           end
         end
 

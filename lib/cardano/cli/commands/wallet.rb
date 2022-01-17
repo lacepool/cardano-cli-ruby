@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 require_relative "address"
+require_relative "transaction"
+require_relative "transactions"
+require_relative "../../coin_selection"
+require_relative "../../transaction_output"
+require_relative "../../utxo"
 
 module Cardano
   module CLI
@@ -12,6 +17,10 @@ module Cardano
           @client = client
           @name = wallet_name
           @payment_addresses = []
+        end
+
+        def transactions
+          Transactions.new(wallet: self)
         end
 
         def exist?
@@ -28,6 +37,10 @@ module Cardano
 
         def create_payment_address
           Address.create(wallet: self, type: :payment_address)
+        end
+
+        def utxos(ada_only: false)
+          @client.query.utxos(payment_addresses, ada_only: ada_only)
         end
 
         def dir

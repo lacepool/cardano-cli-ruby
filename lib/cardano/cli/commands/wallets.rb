@@ -14,8 +14,8 @@ module Cardano
         end
 
         def all
-          @all ||= Dir[File.join(self.class.dir, "*.vkey")].map do |path|
-            name = File.basename(path, ".*").split("_")&.first
+          Dir.glob(File.join(self.class.dir, "/*/")).map do |wallet|
+            name = File.basename(entry)
             Wallet.new(@client, name)
           end
         end
@@ -24,6 +24,8 @@ module Cardano
           wallet = Wallet.new(@client, name)
 
           return self if wallet.exist?
+
+          Dir.mkdir(wallet.dir)
 
           @client.run "address key-gen " \
             "--verification-key-file #{wallet.payment_vkey_file_path} " \

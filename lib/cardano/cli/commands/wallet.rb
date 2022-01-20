@@ -16,6 +16,7 @@ module Cardano
 
         def exist?
           [
+            dir,
             payment_skey_file_path,
             payment_vkey_file_path
           ].all? { |f| File.exist?(f) == true }
@@ -30,19 +31,19 @@ module Cardano
         end
 
         def dir
-          @dir ||= Wallets.dir
+          @dir ||= File.join(Wallets.dir, @name)
         end
 
         def payment_address_file_paths
-          Dir[File.join(dir, "#{@name}_*.addr")]
+          Dir[File.join(dir, "*.addr")]
         end
 
         def payment_vkey_file_path
-          @payment_vkey_file_path ||= "#{dir}/#{@name}_payment.vkey"
+          @payment_vkey_file_path ||= File.join(dir, "payment.vkey")
         end
 
         def payment_skey_file_path
-          @payment_skey_file_path ||= "#{dir}/#{@name}_payment.skey"
+          @payment_skey_file_path ||= File.join(dir, "payment.skey")
         end
       end
     end

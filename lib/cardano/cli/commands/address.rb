@@ -21,7 +21,7 @@ module Cardano
           case type
           when :payment_address
             number = format("%03d", wallet.payment_address_file_paths.size + 1)
-            file_path = File.join(wallet.dir, "#{wallet.name}_#{number}_payment.addr")
+            file_path = File.join(wallet.dir, "#{number}_payment.addr")
 
             wallet.client.run "address build " \
               "--payment-verification-key-file #{wallet.payment_vkey_file_path} " \

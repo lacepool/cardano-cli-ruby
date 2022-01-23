@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "address"
+require_relative "addresses"
 require_relative "transaction"
 require_relative "transactions"
 require_relative "../../coin_selection"
@@ -16,11 +17,14 @@ module Cardano
         def initialize(client, wallet_name)
           @client = client
           @name = wallet_name
-          @payment_addresses = []
         end
 
         def transactions
           Transactions.new(wallet: self)
+        end
+
+        def addresses
+          Addresses.new(wallet: self)
         end
 
         def exist?
@@ -32,11 +36,11 @@ module Cardano
         end
 
         def payment_addresses
-          Address.all(wallet: self, type: :payment_address)
+          addresses.all(type: :payment)
         end
 
         def create_payment_address
-          Address.create(wallet: self, type: :payment_address)
+          addresses.create(type: :payment)
         end
 
         def utxos(ada_only: false)

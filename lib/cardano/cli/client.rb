@@ -16,6 +16,8 @@ module Cardano
         @cli_path = @configuration.cli_path
         @network = @configuration.network
         @network_argument = network_argument
+
+        Dir.mkdir(base_path) unless File.exist?(base_path)
       end
 
       def run(cmd)
@@ -34,6 +36,24 @@ module Cardano
 
       def wallets
         Cardano::CLI::Commands::Wallets.new(self)
+      end
+
+      def base_path
+        unless root_path || File.exist?(root_path)
+          raise ConfigurationError, "make sure root_path is configured and exists."
+        end
+
+        @base_path ||= File.expand_path(
+          File.join(root_path, @network.to_s)
+        )
+      end
+
+      def root_path
+        @root_path ||= File.expand_path(Cardano::CLI.configuration.root_path)
+      end
+
+      def wallets_path
+        @wallets_path ||= File.join(base_path, "wallets")
       end
 
       def network_argument

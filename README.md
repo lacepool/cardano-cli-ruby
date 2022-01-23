@@ -54,21 +54,19 @@ The configuration options can be set by using the `configure` block
 Cardano::CLI.configure do |config|
   config.network = ENV.fetch('NETWORK')
   config.cli_path = ENV.fetch('CLI_PATH')
-  config.wallets_path = ENV.fetch('WALLETS_PATH')
+  config.root_path = ENV.fetch('ROOT_PATH')
   config.logger = MyLogger.new
 end
 ```
 
-A minimal configuration only requires the `cli_path` because it is the essential receiver for all the commands you want to execute. If you want to use wallets, addresses and make transactions you'll also need to provide the `wallets_path` for storing keys and addresses.
-
 The following list shows available configuration options with their default values
 
-| config         | description                                             | default value         |
-| -------------- | ------------------------------------------------------- | --------------------- |
-| `network`      | The Cardano blockchain network to connect storing       | `:testnet`            |
-| `cli_path`     | The path to the cardano-cli binary                      | `nil`                 |
-| `wallets_path` | The path to a folder for storing key and address files  | `nil`                 |
-| `logger`       | A Logger instance                                       | `Logger.new($stdout)` |
+| config      | description                                             | default value         |
+| ------------| ------------------------------------------------------- | --------------------- |
+| `network`   | The Cardano blockchain network to connect storing       | `:testnet`            |
+| `cli_path`  | The path to the cardano-cli binary                      | `nil`                 |
+| `root_path` | The path for storing all relevant files and sub folders | `nil`                 |
+| `logger`    | A Logger instance                                       | `Logger.new($stdout)` |
 
 ## 1 Usage
 

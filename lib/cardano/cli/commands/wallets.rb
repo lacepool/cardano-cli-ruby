@@ -4,19 +4,14 @@ module Cardano
   module CLI
     module Commands
       class Wallets
-        def self.dir
-          @dir ||= File.expand_path(Cardano::CLI.configuration.wallets_path)
-        end
-
         def initialize(client)
           @client = client
           @all = all
         end
 
         def all
-          Dir.glob(File.join(self.class.dir, "/*/")).map do |wallet|
-            name = File.basename(entry)
-            Wallet.new(@client, name)
+          Dir.glob(File.join(@client.wallets_path, "/*/")).map do |wallet|
+            Wallet.new(@client, File.basename(wallet))
           end
         end
 
@@ -26,6 +21,7 @@ module Cardano
           return self if wallet.exist?
 
           Dir.mkdir(wallet.dir)
+          Dir.mkdir(wallet.transactions_path)
 
           @client.run "address key-gen " \
             "--verification-key-file #{wallet.payment_vkey_file_path} " \

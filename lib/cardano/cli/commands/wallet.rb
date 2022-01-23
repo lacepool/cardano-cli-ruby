@@ -25,7 +25,7 @@ module Cardano
 
         def exist?
           [
-            dir,
+            base_path,
             payment_skey_file_path,
             payment_vkey_file_path
           ].all? { |f| File.exist?(f) == true }
@@ -43,20 +43,20 @@ module Cardano
           @client.query.utxos(payment_addresses, ada_only: ada_only)
         end
 
-        def dir
-          @dir ||= File.join(Wallets.dir, @name)
+        def base_path
+          @base_path ||= File.join(@client.wallets_path, @name)
         end
 
         def payment_address_file_paths
-          Dir[File.join(dir, "*.addr")]
+          Dir[File.join(base_path, "*.addr")]
         end
 
         def payment_vkey_file_path
-          @payment_vkey_file_path ||= File.join(dir, "payment.vkey")
+          @payment_vkey_file_path ||= File.join(base_path, "payment.vkey")
         end
 
         def payment_skey_file_path
-          @payment_skey_file_path ||= File.join(dir, "payment.skey")
+          @payment_skey_file_path ||= File.join(base_path, "payment.skey")
         end
       end
     end

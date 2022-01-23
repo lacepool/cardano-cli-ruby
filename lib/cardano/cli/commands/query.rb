@@ -17,7 +17,20 @@ module Cardano
         end
 
         def protocol_params
-          @protocol_params ||= @client.run("query protocol-parameters #{@client.network_argument}")
+          file = File.join(@client.base_path, "protocol-parameters.json")
+
+          unless File.exist?(file)
+            response = @client.run("query protocol-parameters #{@client.network_argument}")
+
+            if response.success?
+              File.write(file, response.data)
+              return response.data
+            else
+              return false
+            end
+          end
+
+          File.read(file)
         end
 
         def utxos(address, ada_only: false)

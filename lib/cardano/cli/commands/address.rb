@@ -17,6 +17,7 @@ module Cardano
         def address
           @address ||= File.read @file
         end
+        alias_method :to_s, :address
 
         def utxos(ada_only: false)
           @client.query.utxos(address, ada_only: ada_only)

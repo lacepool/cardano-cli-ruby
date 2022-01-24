@@ -22,14 +22,6 @@ module Cardano
           @client.query.utxos(address, ada_only: ada_only)
         end
 
-        alias_method :to_s, :address
-
-        # def vkey
-        #   return unless File.exist? vkey_file_path
-
-        #   @vkey ||= File.read vkey_file_path
-        # end
-
         def info
           @client.run "address info --address #{address}"
 

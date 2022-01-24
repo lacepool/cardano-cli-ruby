@@ -118,6 +118,15 @@ Alternatively, if you only want to create the wallet keys but no payment address
 wallet = client.wallets.create("my-wallet", without_payment_address: true)
 ```
 
+#### UTxO
+
+Instead of querying every single address yourself, you can use this shortcut to get all UTxO of all addresses belonging yo your wallet.
+
+```ruby
+# returns [Cardano::Utxo]
+utxos = wallet.utxos
+```
+
 ### Payment addresses
 
 List all payment addresses objects belonging to a wallet

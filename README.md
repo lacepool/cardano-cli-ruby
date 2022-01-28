@@ -170,7 +170,9 @@ Examples
 ```ruby
 # Transaction with only 1 output
 tx = wallet.transactions.create(to: "addr1...", lovelace: 5_000_000)
+```
 
+```ruby
 # Transaction with multiple outputs
 outputs = [
     { to: "addr1abc..", lovelace: 50_000_000 },
@@ -178,8 +180,10 @@ outputs = [
     { to: "addr1ghi..", lovelace: 20_000_000 },
 ]
 tx = wallet.transactions.create(outputs)
+```
 
-# Building the transaction manually, with only 1 output
+```ruby
+# Manual transaction with only 1 output
 tx = Cardano::CLI::Commands::Transaction.new(wallet: wallet, to: "addr1..", lovelace: 5_000_000, ttl: 1200)
 draft_file_path = tx.draft
 fees = tx.calculate_fees
